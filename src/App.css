@@ -1,6 +1,6 @@
-.App {
+/* .App {
   text-align: center;
-}
+} */
 
 .App-logo {
   height: 40vmin;
@@ -35,4 +35,14 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.google-btn {
+  background-color: orangered;
+  color: white;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  display: block;
+  margin: auto;
 }
