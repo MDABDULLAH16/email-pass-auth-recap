@@ -2,6 +2,7 @@ import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import {
   getAuth,
+  GithubAuthProvider,
   GoogleAuthProvider,
   signInWithPopup,
   signOut,
@@ -17,6 +18,7 @@ function App() {
   const [user, setUser] = useState({});
 
   const googleProvider = new GoogleAuthProvider();
+  const gitHubProvider = new GithubAuthProvider();
   const handleGoogleSignIn = () => {
     signInWithPopup(auth, googleProvider)
       .then((result) => {
@@ -25,6 +27,17 @@ function App() {
       })
       .catch((err) => console.log(err));
   };
+  const handleSignInWithGithub = () => {
+    signInWithPopup(auth, gitHubProvider)
+      .then((result) => {
+        setUser(result.user);
+        console.log(result.user);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
   const handleSignOut = () => {
     signOut(auth)
       .then((result) => {
@@ -44,14 +57,19 @@ function App() {
             Sign Out
           </Button>
         ) : (
-          <button onClick={handleGoogleSignIn} className="google-btn">
-            Sign In With Google
-          </button>
+          <div>
+            <button onClick={handleGoogleSignIn} className="google-btn">
+              Sign In With Google
+            </button>
+            <button onClick={handleSignInWithGithub} className="google-btn">
+              Sign In With GitHub
+            </button>
+          </div>
         )}
       </div>
       <div>
         <h2>User Name: {user.displayName}</h2>
-        <img src={user.photoURL} alt="" />
+        <img referrerPolicy="no-referrer" src={user.photoURL} alt="" />
       </div>
     </div>
   );
