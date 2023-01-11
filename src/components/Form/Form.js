@@ -2,7 +2,11 @@ import React, { useState } from "react";
 import { Button } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  getAuth,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 import app from "../../firebase.init";
 
 const auth = getAuth(app);
@@ -12,12 +16,17 @@ const Forms = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [validated, setValidated] = useState(false);
+  const [registered, setRegistered] = useState(false);
 
   const handleEmailBlur = (event) => {
     setEmail(event.target.value);
   };
   const handlePasswordBlur = (event) => {
     setPassword(event.target.value);
+  };
+
+  const handleRegisteredChange = (event) => {
+    setRegistered(event.target.checked);
   };
 
   const handleSubmit = (event) => {
@@ -35,20 +44,36 @@ const Forms = () => {
 
     setValidated(true);
     setError();
-    //form validity
+    //form validity up
 
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((result) => {
-        console.log(result.user);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+    if (registered) {
+      signInWithEmailAndPassword(auth, email, password)
+        .then((result) => {
+          const user = result.user;
+          console.log(user);
+        })
+        .catch((error) => {
+          console.error(error.message);
+        });
+    } else {
+      createUserWithEmailAndPassword(auth, email, password)
+        .then((result) => {
+          console.log(result.user);
+          setEmail("");
+          setPassword("");
+        })
+        .catch((error) => {
+          setError(error.message);
+        });
+    }
+
     event.preventDefault();
   };
   return (
     <div className=" w-50 mx-auto mt-4 mb-4">
-      <h2 className="text-primary">Please Register First!!</h2>
+      <h2 className="text-primary">
+        Please {registered ? "Login" : "Register"}
+      </h2>
       <Form noValidate validated={validated} onSubmit={handleSubmit}>
         <Form.Group className="mb-3" controlId="formBasicEmail">
           <Form.Label>Email address</Form.Label>
@@ -78,12 +103,16 @@ const Forms = () => {
             Please provide a valid Password.
           </Form.Control.Feedback>
         </Form.Group>
-        {/* <Form.Group className="mb-3" controlId="formBasicCheckbox">
-          <Form.Check type="checkbox" label="Check me out" />
-        </Form.Group> */}
+        <Form.Group className="mb-3" controlId="formBasicCheckbox">
+          <Form.Check
+            onChange={handleRegisteredChange}
+            type="checkbox"
+            label="Already Registered?"
+          />
+        </Form.Group>
         <p className="text-danger">{error}</p>
         <Button variant="primary" type="submit">
-          Submit
+          {registered ? "Login" : "Register"}
         </Button>
       </Form>
     </div>
