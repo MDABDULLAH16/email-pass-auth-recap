@@ -5,6 +5,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import {
   createUserWithEmailAndPassword,
   getAuth,
+  sendEmailVerification,
+  sendPasswordResetEmail,
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import app from "../../firebase.init";
@@ -61,6 +63,7 @@ const Forms = () => {
           console.log(result.user);
           setEmail("");
           setPassword("");
+          verifyEmail();
         })
         .catch((error) => {
           setError(error.message);
@@ -68,6 +71,17 @@ const Forms = () => {
     }
 
     event.preventDefault();
+  };
+
+  const handleForgetPassword = () => {
+    sendPasswordResetEmail(auth, email).then(() => {
+      console.log("sent rest password");
+    });
+  };
+  const verifyEmail = () => {
+    sendEmailVerification(auth.currentUser).then((result) => {
+      console.log("Email verification sent successfully");
+    });
   };
   return (
     <div className=" w-50 mx-auto mt-4 mb-4">
@@ -111,6 +125,11 @@ const Forms = () => {
           />
         </Form.Group>
         <p className="text-danger">{error}</p>
+
+        <Button onClick={handleForgetPassword} variant="link">
+          Forget Password?
+        </Button>
+
         <Button variant="primary" type="submit">
           {registered ? "Login" : "Register"}
         </Button>
