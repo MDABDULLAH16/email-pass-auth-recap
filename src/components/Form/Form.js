@@ -8,6 +8,7 @@ import {
   sendEmailVerification,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
+  updateProfile,
 } from "firebase/auth";
 import app from "../../firebase.init";
 
@@ -16,6 +17,7 @@ const auth = getAuth(app);
 const Forms = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
   const [error, setError] = useState("");
   const [validated, setValidated] = useState(false);
   const [registered, setRegistered] = useState(false);
@@ -25,6 +27,9 @@ const Forms = () => {
   };
   const handlePasswordBlur = (event) => {
     setPassword(event.target.value);
+  };
+  const handleUserName = (event) => {
+    setName(event.target.value);
   };
 
   const handleRegisteredChange = (event) => {
@@ -64,6 +69,7 @@ const Forms = () => {
           setEmail("");
           setPassword("");
           verifyEmail();
+          userName();
         })
         .catch((error) => {
           setError(error.message);
@@ -73,6 +79,17 @@ const Forms = () => {
     event.preventDefault();
   };
 
+  const userName = () => {
+    updateProfile(auth.currentUser, {
+      displayName: name,
+    })
+      .then(() => {
+        console.log("updating name");
+      })
+      .catch(() => {
+        setError(error.message);
+      });
+  };
   const handleForgetPassword = () => {
     sendPasswordResetEmail(auth, email).then(() => {
       console.log("sent rest password");
@@ -89,6 +106,20 @@ const Forms = () => {
         Please {registered ? "Login" : "Register"}
       </h2>
       <Form noValidate validated={validated} onSubmit={handleSubmit}>
+        {!registered && (
+          <Form.Group className="mb-3" controlId="formBasicName">
+            <Form.Label>User Name</Form.Label>
+            <Form.Control
+              onBlur={handleUserName}
+              type="text"
+              placeholder="Enter Name"
+              required
+            />
+            <Form.Control.Feedback type="invalid">
+              Please provide a valid Name.
+            </Form.Control.Feedback>
+          </Form.Group>
+        )}
         <Form.Group className="mb-3" controlId="formBasicEmail">
           <Form.Label>Email address</Form.Label>
           <Form.Control
